@@ -1,10 +1,12 @@
-// app/page.tsx
 'use client'
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { fetchPosts, Post } from './api';
+import { useApi, Post } from '../app/api';
+import { useAuth } from '../app/context/AuthContext';
 
 const MainPage: React.FC = () => {
+  const { fetchPosts } = useApi();
+  const { isAuthenticated } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -25,6 +27,10 @@ const MainPage: React.FC = () => {
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <div className="flex justify-center items-center min-h-screen">Not authenticated</div>;
   }
 
   return (
