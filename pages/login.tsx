@@ -1,6 +1,8 @@
+'use client'
 import { useState } from 'react';
 import { useAuth } from '../app/context/AuthContext';
 import axios from 'axios';
+import ThemeToggle from '../app/components/ThemeToggle';
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -23,6 +25,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <ThemeToggle />
       <h1 className="text-4xl font-bold mb-4">Login</h1>
       <div className="mb-4">
         <input

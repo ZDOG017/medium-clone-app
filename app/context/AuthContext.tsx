@@ -17,19 +17,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
-    if (storedToken) {
-      setIsAuthenticated(true);
-      setToken(storedToken);
-    } else {
-      setIsAuthenticated(false);
-      setToken(null);
+    const storedExpiration = localStorage.getItem('authExpiration');
+    if (storedToken && storedExpiration) {
+      const expirationDate = new Date(storedExpiration);
+      if (expirationDate > new Date()) {
+        setIsAuthenticated(true);
+        setToken(storedToken);
+      } else {
+        logout();
+      }
     }
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const expirationDate = new Date(new Date().getTime() + 30 * 60 * 1000);
+      localStorage.setItem('authExpiration', expirationDate.toISOString());
+    }
+  }, [isAuthenticated]);
 
   const login = (authToken: string) => {
     setIsAuthenticated(true);
     setToken(authToken);
     localStorage.setItem('authToken', authToken);
+    const expirationDate = new Date(new Date().getTime() + 30 * 60 * 1000);
+    localStorage.setItem('authExpiration', expirationDate.toISOString());
     router.push('/');
   };
 
@@ -37,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthenticated(false);
     setToken(null);
     localStorage.removeItem('authToken');
+    localStorage.removeItem('authExpiration');
     router.push('/login');
   };
 
@@ -49,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = (): AuthContextProps => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

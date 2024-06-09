@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Post, useApi } from '../../app/api';
 import { useAuth } from '../../app/context/AuthContext';
+import ThemeToggle from '../../app/components/ThemeToggle';
+import withAuth from '../../app/components/withAuth';
 
 const PostPage: React.FC = () => {
   const { fetchPostById } = useApi();
@@ -16,10 +18,19 @@ const PostPage: React.FC = () => {
     if (id) {
       const getPost = async () => {
         try {
-          const data = await fetchPostById(Number(id));
-          setPost(data);
+          const fetchedPost = await fetchPostById(Number(id));
+          const storedEditedPosts = JSON.parse(localStorage.getItem('editedPosts') || '[]');
+          const editedPost = storedEditedPosts.find((post: Post) => post.id === Number(id));
+          setPost(editedPost || fetchedPost);
         } catch (error) {
           console.error('Failed to fetch post:', error);
+          const newPosts = JSON.parse(localStorage.getItem('newPosts') || '[]');
+          const foundPost = newPosts.find((post: Post) => post.id === Number(id));
+          if (foundPost) {
+            setPost(foundPost);
+          } else {
+            setPost(null);
+          }
         } finally {
           setLoading(false);
         }
@@ -43,7 +54,8 @@ const PostPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <article className="prose lg:prose-xl bg-white p-6 rounded-lg shadow-md">
+      <ThemeToggle />
+      <article className="article-card prose lg:prose-xl p-6 rounded-lg shadow-md">
         <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
         <p>{post.body}</p>
       </article>
@@ -51,4 +63,4 @@ const PostPage: React.FC = () => {
   );
 };
 
-export default PostPage;
+export default withAuth(PostPage);

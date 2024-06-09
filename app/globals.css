@@ -15,3 +15,37 @@ h1, h2, h3, h4, h5, h6 {
 .container {
   @apply max-w-4xl mx-auto;
 }
+
+/* Define light theme styles */
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --card-background-color: #ffffff;
+  --card-text-color: #000000;
+}
+
+/* Define dark theme styles */
+[data-theme='dark'] {
+  --background-color: #000000;
+  --text-color: #ffffff;
+  --card-background-color: #333333;
+  --card-text-color: #ffffff;
+}
+
+/* Apply the theme variables */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Apply theme variables to articles */
+.article-card {
+  background-color: var(--card-background-color);
+  color: var(--card-text-color);
+}
+
+.article-card h1,
+.article-card h2,
+.article-card p {
+  color: var(--card-text-color);
+}
