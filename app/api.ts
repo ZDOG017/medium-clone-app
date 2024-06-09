@@ -67,7 +67,7 @@ export const useApi = () => {
     try {
       const response = await axiosInstance.post('/posts/add', {
         ...post,
-        userId: 5 // Replace with appropriate userId
+        userId: 5
       });
       return response.data;
     } catch (error) {
